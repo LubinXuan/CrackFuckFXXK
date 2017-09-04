@@ -56,6 +56,8 @@ public class GDLocationServiceImpl extends BaseLocationServiceImpl {
                         data.put("getCity", addressComponent.getString("city"));
                         data.put("getDistrict", addressComponent.getString("district"));
 
+                        data.put("address",regeocode.getString("formatted_address"));
+
                         JSONObject street = addressComponent.getJSONObject("streetNumber");
 
                         String retLoc = street.getString("location");

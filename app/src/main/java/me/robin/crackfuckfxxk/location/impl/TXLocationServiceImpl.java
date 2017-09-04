@@ -6,6 +6,7 @@ import me.robin.crackfuckfxxk.LBSStoreService;
 import me.robin.crackfuckfxxk.ResponseReadUtils;
 import me.robin.crackfuckfxxk.location.LocationUpdateCallBack;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Random;
@@ -50,6 +51,15 @@ public class TXLocationServiceImpl extends BaseLocationServiceImpl {
                         data.put("getDistrict", addressComponent.getString("district"));
                         data.put("getStreet", addressComponent.getString("street"));
                         data.put("getStreetNumber", addressComponent.getString("street_number"));
+                        String address = object.getString("address");
+                        JSONObject formatted_addresses = object.getJSONObject("formatted_addresses");
+                        if (null != formatted_addresses) {
+                            String f_address = formatted_addresses.getString("rough");
+                            if (StringUtils.isNotBlank(f_address)) {
+                                address = address + f_address;
+                            }
+                        }
+                        data.put("address", address);
                         locationUpdateCallBack.success(TXLocationServiceImpl.this, data);
                     }
                 } catch (Exception e) {

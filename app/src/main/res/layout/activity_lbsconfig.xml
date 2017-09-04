@@ -30,10 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="41dp" android:id="@+id/textView7"
             android:layout_below="@+id/locEditText" android:layout_alignStart="@+id/locEditText"/>
-    <EditText
+    <TextView
             android:layout_width="match_parent"
             android:layout_height="184dp"
-            android:inputType="textMultiLine"
             android:ems="10"
             android:id="@+id/lbsResultTextView"
             android:layout_marginTop="20dp"

@@ -6,21 +6,25 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import me.robin.crackfuckfxxk.location.LocationService;
 import me.robin.crackfuckfxxk.location.LocationUpdateCallBack;
 import me.robin.crackfuckfxxk.location.impl.BDLocationServiceImpl;
 import me.robin.crackfuckfxxk.location.impl.GDLocationServiceImpl;
 import me.robin.crackfuckfxxk.location.impl.TXLocationServiceImpl;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LBSConfigActivity extends Activity {
 
     private EditText locEditText;
-    private EditText lbsResultTextView;
+    private TextView lbsResultTextView;
     private Switch onOrOff;
     private Button update;
     private Button saveDataBut;
@@ -36,9 +40,9 @@ public class LBSConfigActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lbsconfig);
         this.handler = new Handler();
-        this.lbsStoreService = new LBSStoreService(getSharedPreferences( "config", MODE_WORLD_READABLE));
+        this.lbsStoreService = new LBSStoreService(getSharedPreferences("config", MODE_WORLD_READABLE));
         this.locEditText = (EditText) findViewById(R.id.locEditText);
-        this.lbsResultTextView = (EditText) findViewById(R.id.lbsResultTextView);
+        this.lbsResultTextView = (TextView) findViewById(R.id.lbsResultTextView);
         this.onOrOff = (Switch) findViewById(R.id.onOrOff);
         this.update = (Button) findViewById(R.id.update);
         this.saveDataBut = (Button) findViewById(R.id.saveDataBut);
@@ -63,6 +67,7 @@ public class LBSConfigActivity extends Activity {
                         @Override
                         public void success(LocationService locationService, JSONObject data) {
                             int c = count.decrementAndGet();
+                            data.put("updateTime", DateFormatUtils.format(Calendar.getInstance().getTime(), "yyyyMMddHHmm"));
                             lbsStoreService.save(locationService.getClass().getSimpleName(), data);
                             if (c == 0) {
                                 handler.post(new Runnable() {
@@ -75,6 +80,12 @@ public class LBSConfigActivity extends Activity {
                                 lbsStoreService.commit();
                             }
                             showMessage(data.toJSONString());
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    updateLocResult();
+                                }
+                            });
                         }
 
                         @Override
@@ -113,6 +124,28 @@ public class LBSConfigActivity extends Activity {
         });
 
         this.onOrOff.setChecked(lbsStoreService.mockOn());
+
+        this.updateLocResult();
+    }
+
+
+    private void updateLocResult() {
+        StringBuilder sb = new StringBuilder();
+        JSONObject bdJson = lbsStoreService.get(BDLocationServiceImpl.class.getSimpleName());
+        JSONObject gdJson = lbsStoreService.get(GDLocationServiceImpl.class.getSimpleName());
+        JSONObject txJson = lbsStoreService.get(TXLocationServiceImpl.class.getSimpleName());
+        sb.append("百度(").append(getUpdateTime(bdJson)).append("):").append(getAddress(bdJson)).append("\n");
+        sb.append("高德(").append(getUpdateTime(gdJson)).append("):").append(getAddress(gdJson)).append("\n");
+        sb.append("腾讯(").append(getUpdateTime(txJson)).append("):").append(getAddress(txJson)).append("\n");
+        this.lbsResultTextView.setText(sb.toString());
+    }
+
+    private String getAddress(JSONObject data) {
+        return null == data ? "" : data.getString("address");
+    }
+
+    private String getUpdateTime(JSONObject data) {
+        return null == data ? "" : data.getString("updateTime");
     }
 
     private void showMessage(String message) {

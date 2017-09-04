@@ -1,10 +1,15 @@
 package me.robin.crackfuckfxxk;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import external.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Administrator on 2017-05-12.
@@ -37,6 +42,28 @@ public class LBSStoreService {
         } else {
             return JSON.parseObject(data);
         }
+    }
+
+    public boolean signEnable(Context context) {
+        if (mockOn()) {
+            Calendar calendar = Calendar.getInstance();
+            Date now = calendar.getTime();
+            calendar.set(Calendar.HOUR_OF_DAY, 8);
+            calendar.set(Calendar.MINUTE, 0);
+            Date start = calendar.getTime();
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 0);
+            Date end = calendar.getTime();
+            boolean enable = now.after(start) && now.before(end);
+            if (enable) {
+                try {
+                    Toast.makeText(context, "现在时间:" + now, Toast.LENGTH_LONG).show();
+                } catch (Throwable ignore) {
+                }
+            }
+            return enable;
+        }
+        return false;
     }
 
     public boolean mockOn() {

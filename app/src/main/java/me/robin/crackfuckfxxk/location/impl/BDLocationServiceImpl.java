@@ -50,6 +50,7 @@ public class BDLocationServiceImpl extends BaseLocationServiceImpl {
                         data.put("getDistrict", addressComponent.getString("district"));
                         data.put("getStreet", addressComponent.getString("street"));
                         data.put("getStreetNumber", addressComponent.getString("street_number"));
+                        data.put("address", object.getString("formatted_address"));
                         locationUpdateCallBack.success(BDLocationServiceImpl.this, data);
                     }
                 } catch (Exception e) {

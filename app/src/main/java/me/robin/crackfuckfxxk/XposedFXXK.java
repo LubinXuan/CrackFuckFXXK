@@ -1,5 +1,6 @@
 package me.robin.crackfuckfxxk;
 
+import android.app.AndroidAppHelper;
 import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -12,14 +13,16 @@ import me.robin.crackfuckfxxk.location.impl.GDLocationServiceImpl;
 import me.robin.crackfuckfxxk.location.impl.TXLocationServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Created by Administrator on 2017-05-12.
+ * 处理定位数据
  */
 public class XposedFXXK implements IXposedHookLoadPackage {
 
-    public static final String TAG = "XposedFXXK";
+    static final String TAG = "XposedFXXK";
 
     private LBSStoreService lbsStoreService;
 
@@ -30,7 +33,7 @@ public class XposedFXXK implements IXposedHookLoadPackage {
             lbsStoreService = new LBSStoreService(new XSharedPreferences("me.robin.crackfuckfxxk", "config"));
         }
 
-        if (StringUtils.contains(loadPackageParam.packageName, "com.facishare.fs") && lbsStoreService.mockOn()) {
+        if (StringUtils.contains(loadPackageParam.packageName, "com.facishare.fs")) {
 
             Log.e(TAG, "开始Hook定位组件:" + loadPackageParam.packageName);
             hookBD(loadPackageParam);
@@ -43,6 +46,11 @@ public class XposedFXXK implements IXposedHookLoadPackage {
         XposedHelpers.findAndHookMethod("com.fxiaoke.location.impl.BdLocation", lpparam.classLoader, "onReceiveLocation", "com.baidu.location.BDLocation", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+
+                if (!lbsStoreService.signEnable(AndroidAppHelper.currentApplication().getApplicationContext())) {
+                    return;
+                }
+
                 final JSONObject locationData = lbsStoreService.get(BDLocationServiceImpl.class.getSimpleName());
                 if (null == locationData) {
                     return;
@@ -83,6 +91,11 @@ public class XposedFXXK implements IXposedHookLoadPackage {
         XposedHelpers.findAndHookMethod("com.fxiaoke.location.impl.GdLocation", lpparam.classLoader, "onLocationChanged", "com.amap.api.location.AMapLocation", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+
+                if (!lbsStoreService.signEnable(AndroidAppHelper.currentApplication().getApplicationContext())) {
+                    return;
+                }
+
                 final JSONObject locationData = lbsStoreService.get(GDLocationServiceImpl.class.getSimpleName());
                 if (null == locationData) {
                     return;
@@ -101,20 +114,25 @@ public class XposedFXXK implements IXposedHookLoadPackage {
     }
 
     private void hookTX(final XC_LoadPackage.LoadPackageParam lpparam) {
-        hookMethodResult(lpparam.classLoader,"getLatitude",double.class);
-        hookMethodResult(lpparam.classLoader,"getLongitude",double.class);
-        hookMethodResult(lpparam.classLoader,"getNation",String.class);
-        hookMethodResult(lpparam.classLoader,"getProvince",String.class);
-        hookMethodResult(lpparam.classLoader,"getCity",String.class);
-        hookMethodResult(lpparam.classLoader,"getDistrict",String.class);
-        hookMethodResult(lpparam.classLoader,"getStreet",String.class);
-        hookMethodResult(lpparam.classLoader,"getStreetNo",String.class);
+        hookMethodResult(lpparam.classLoader, "getLatitude", double.class);
+        hookMethodResult(lpparam.classLoader, "getLongitude", double.class);
+        hookMethodResult(lpparam.classLoader, "getNation", String.class);
+        hookMethodResult(lpparam.classLoader, "getProvince", String.class);
+        hookMethodResult(lpparam.classLoader, "getCity", String.class);
+        hookMethodResult(lpparam.classLoader, "getDistrict", String.class);
+        hookMethodResult(lpparam.classLoader, "getStreet", String.class);
+        hookMethodResult(lpparam.classLoader, "getStreetNo", String.class);
     }
 
     private void hookMethodResult(ClassLoader classLoader, String methodName, final Class resultClazz) {
         XposedHelpers.findAndHookMethod("ct.cz", classLoader, methodName, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+
+                if (!lbsStoreService.signEnable(AndroidAppHelper.currentApplication().getApplicationContext())) {
+                    return;
+                }
+
                 JSONObject locationData = lbsStoreService.get(TXLocationServiceImpl.class.getSimpleName());
                 if (null == locationData) {
                     return;
