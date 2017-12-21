@@ -1,4 +1,4 @@
-package me.robin.crackfuckfxxk;
+package me.robin.crackfuckdd;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,24 +6,29 @@ import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
-import com.alibaba.fastjson.JSON;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
-import me.robin.crackfuckfxxk.location.LocationService;
-import me.robin.crackfuckfxxk.location.LocationUpdateCallBack;
-import me.robin.crackfuckfxxk.location.impl.BDLocationServiceImpl;
-import me.robin.crackfuckfxxk.location.impl.GDLocationServiceImpl;
-import me.robin.crackfuckfxxk.location.impl.TXLocationServiceImpl;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import me.robin.crackfuckdd.location.LocationService;
+import me.robin.crackfuckdd.location.LocationUpdateCallBack;
+import me.robin.crackfuckdd.location.impl.GDLocationServiceImpl;
 
 public class LBSConfigActivity extends Activity {
 
@@ -45,7 +50,7 @@ public class LBSConfigActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lbsconfig);
-        this.handler = new Handler();
+        this.handler = new Handler(getMainLooper());
         this.lbsStoreService = new LBSStoreService(getSharedPreferences("config", MODE_WORLD_READABLE));
         this.locEditText = (EditText) findViewById(R.id.locEditText);
         this.lbsResultTextView = (TextView) findViewById(R.id.lbsResultTextView);
@@ -54,8 +59,6 @@ public class LBSConfigActivity extends Activity {
         this.update = (Button) findViewById(R.id.update);
         this.saveDataBut = (Button) findViewById(R.id.saveDataBut);
         this.updateWorkDayBut = (Button) findViewById(R.id.updateWorkDayBut);
-        this.locationServiceList.add(new BDLocationServiceImpl());
-        this.locationServiceList.add(new TXLocationServiceImpl());
         this.locationServiceList.add(new GDLocationServiceImpl());
         this.lbsResultTextView.setMovementMethod(ScrollingMovementMethod.getInstance());
         this.locEditText.setText(lbsStoreService.currentLocation());
@@ -101,9 +104,20 @@ public class LBSConfigActivity extends Activity {
                         }
 
                         @Override
-                        public void error(LocationService locationService, String message) {
-                            Toast.makeText(LBSConfigActivity.this.getApplicationContext(), locationService.getClass().getSimpleName().substring(0, 2) + "更新失败:" + message, Toast.LENGTH_LONG).show();
-                            locationService.locate(sp[0], sp[1], this);
+                        public void error(final LocationService locationService, final String message) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(LBSConfigActivity.this.getApplicationContext(), locationService.getClass().getSimpleName().substring(0, 2) + "更新失败:" + message, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            final LocationUpdateCallBack callBack = this;
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    locationService.locate(sp[0], sp[1], callBack);
+                                }
+                            }, 5000);
                         }
                     };
                     for (LocationService locationService : locationServiceList) {
@@ -173,13 +187,9 @@ public class LBSConfigActivity extends Activity {
 
     private void updateLocResult() {
         StringBuilder sb = new StringBuilder();
-        JSONObject bdJson = lbsStoreService.get(BDLocationServiceImpl.class.getSimpleName());
         JSONObject gdJson = lbsStoreService.get(GDLocationServiceImpl.class.getSimpleName());
-        JSONObject txJson = lbsStoreService.get(TXLocationServiceImpl.class.getSimpleName());
         JSONObject specialDays = lbsStoreService.specialDays();
-        sb.append("百度(").append(getUpdateTime(bdJson)).append("):").append(getAddress(bdJson)).append("\n");
         sb.append("高德(").append(getUpdateTime(gdJson)).append("):").append(getAddress(gdJson)).append("\n");
-        sb.append("腾讯(").append(getUpdateTime(txJson)).append("):").append(getAddress(txJson)).append("\n");
         sb.append("节日(").append(getString(specialDays, "year")).append(")").append("\n");
         sb.append("节假日:").append(getString(specialDays, "holiday")).append("\n");
         sb.append("特殊工作日:").append(getString(specialDays, "specialWorkday")).append("\n");
@@ -208,6 +218,6 @@ public class LBSConfigActivity extends Activity {
     }
 
     private void showMessage(String message) {
-        Log.i(XposedFXXK.TAG, message);
+        Log.i(DingTalkHook.TAG, message);
     }
 }

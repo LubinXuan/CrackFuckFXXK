@@ -1,6 +1,6 @@
-package me.robin.crackfuckfxxk.location.impl;
+package me.robin.crackfuckdd.location.impl;
 
-import me.robin.crackfuckfxxk.location.LocationService;
+import me.robin.crackfuckdd.location.LocationService;
 import okhttp3.OkHttpClient;
 
 /**

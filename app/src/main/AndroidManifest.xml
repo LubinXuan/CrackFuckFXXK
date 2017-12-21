@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="me.robin.crackfuckfxxk">
+          package="me.robin.crackfuckdd">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -8,11 +8,10 @@
     <application android:allowBackup="true"
                  android:label="@string/app_name"
                  android:icon="@mipmap/ic_launcher"
-                 android:supportsRtl="true"
-                 android:theme="@style/AppTheme">
+                 android:supportsRtl="true">
 
         <activity android:name=".LBSConfigActivity"
-                  android:label="@string/app_name" android:screenOrientation="portrait">
+            android:label="@string/app_name" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -20,7 +19,7 @@
         </activity>
 
         <meta-data android:name="xposedmodule" android:value="true" />
-        <meta-data android:name="xposeddescription" android:value="定位信息" />
+        <meta-data android:name="xposeddescription" android:value="KICKDD" />
         <meta-data android:name="xposedminversion" android:value="46" />
 
     </application>

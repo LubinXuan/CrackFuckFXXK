@@ -1,23 +1,31 @@
-package me.robin.crackfuckfxxk;
+package me.robin.crackfuckdd;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import me.robin.crackfuckfxxk.location.impl.BaseLocationServiceImpl;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import me.robin.crackfuckdd.location.impl.BaseLocationServiceImpl;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017-05-12.
@@ -48,7 +56,7 @@ public class LBSStoreService {
     public JSONObject get(String type) {
         String data = preferences.getString(type, null);
         if (StringUtils.isBlank(data)) {
-            Log.w(XposedFXXK.TAG, "没有读取到数据:" + type);
+            Log.w(DingTalkHook.TAG, "没有读取到数据:" + type);
             return null;
         } else {
             return JSON.parseObject(data);
@@ -134,6 +142,7 @@ public class LBSStoreService {
 
     public void updateHoliday(final Runnable runnable) {
         final String year = DateFormatUtils.format(Calendar.getInstance().getTime(), "yyyy");
+        final String today = DateFormatUtils.format(Calendar.getInstance().getTime(), "yyyyMMdd");
         Callback callback = new Callback() {
 
             AtomicInteger count = new AtomicInteger(2);
@@ -157,7 +166,11 @@ public class LBSStoreService {
                     List<String> date = new ArrayList<>();
                     for (String day : days) {
                         if (StringUtils.isNotBlank(day)) {
-                            date.add(year+StringUtils.trim(day));
+                            day = year + StringUtils.trim(day);
+                            if (day.compareTo(today) < 0) {
+                                continue;
+                            }
+                            date.add(day);
                         }
                     }
                     if (date.isEmpty()) {

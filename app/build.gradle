@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 23
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "me.robin.crackfuckfxxk"
+        applicationId "me.robin.crackfuckdd"
         minSdkVersion 19
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 23
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -22,6 +22,30 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main {
+            java {
+                exclude 'a/a/**'
+                exclude 'ali/mmpc/**'
+                exclude 'android/**'
+                exclude 'anet/channel/**'
+                exclude 'anetwork/**'
+                exclude 'cn/wps/**'
+                exclude 'com/**'
+                exclude 'defpackage/**'
+                exclude 'javax/annotation/**'
+                exclude 'kotlin/**'
+                exclude 'mtopsdk/**'
+                exclude 'nl/**'
+                exclude 'okio/**'
+                exclude 'org/**'
+                exclude 'pl/**'
+                exclude 'me/leolin/**'
+            }
+        }
+    }
+
 }
 
 dependencies {
@@ -29,12 +53,9 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
     compile 'com.alibaba:fastjson:1.1.56.android'
     compile 'com.squareup.okhttp3:okhttp:3.7.0'
-    compile 'com.squareup.okhttp3:okhttp:3.7.0'
-    compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     provided files('src/main/libs/XposedBridgeApi-87.jar')
 }

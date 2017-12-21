@@ -1,4 +1,4 @@
-package me.robin.crackfuckfxxk.utils;
+package me.robin.crackfuckdd.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

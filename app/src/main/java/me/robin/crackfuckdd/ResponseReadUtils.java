@@ -1,7 +1,6 @@
-package me.robin.crackfuckfxxk;
+package me.robin.crackfuckdd;
 
 import android.util.Log;
-import okhttp3.Response;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +8,8 @@ import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
+
+import okhttp3.Response;
 
 /**
  * Created by xuanlubin on 2017/4/18.
@@ -41,7 +42,7 @@ public class ResponseReadUtils {
                 bos.write(buffer, 0, n);
             }
         } catch (IOException e) {
-            Log.e(XposedFXXK.TAG, "Gzip 解压异常", e);
+            Log.e(DingTalkHook.TAG, "Gzip 解压异常", e);
         } finally {
             try {
                 in.close();
