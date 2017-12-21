@@ -41,32 +41,6 @@ public class DingTalkHook implements IXposedHookLoadPackage {
     private Method beforeHookedMethod = reflectMethod(XC_MethodHook.class, "beforeHookedMethod");
     private Method afterHookedMethod = reflectMethod(XC_MethodHook.class, "afterHookedMethod");
 
-    private final XC_MethodHook gdLocation = new XC_MethodHook() {
-        LBSStoreService lbsStoreService = new LBSStoreService(new XSharedPreferences("me.robin.crackfuckdd", "config"));
-
-        @Override
-        protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-            if (!lbsStoreService.signEnable(AndroidAppHelper.currentApplication().getApplicationContext())) {
-                return;
-            }
-            final JSONObject locationData = lbsStoreService.get(GDLocationServiceImpl.class.getSimpleName());
-            if (null != locationData) {
-                Log.i(TAG, "修改前:" + methodHookParam.args[0]);
-                Object param = methodHookParam.args[0];
-                JSONObject dataMap = locationData.getJSONObject("data");
-                for (String key : dataMap.keySet()) {
-                    try {
-                        CData cData = dataMap.getObject(key, CData.class);
-                        ReflectUtils.setValue(param, key, cData);
-                    } catch (Throwable e) {
-                        Log.e(TAG, "处理异常 " + key + "  " + dataMap.getString(key));
-                    }
-                }
-                Log.i(TAG, "修改后:" + methodHookParam.args[0]);
-            }
-        }
-    };
-
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpp) throws Throwable {
         if (StringUtils.equals(lpp.packageName, "com.alibaba.android.rimet")) {
@@ -94,9 +68,36 @@ public class DingTalkHook implements IXposedHookLoadPackage {
 
             this.mockGps(lpp.classLoader);
 
+            final XC_MethodHook gdLocation = new XC_MethodHook() {
+                LBSStoreService lbsStoreService = new LBSStoreService(new XSharedPreferences("me.robin.crackfuckdd", "config"));
+
+                @Override
+                protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+                    if (!lbsStoreService.signEnable(AndroidAppHelper.currentApplication().getApplicationContext())) {
+                        return;
+                    }
+                    final JSONObject locationData = lbsStoreService.get(GDLocationServiceImpl.class.getSimpleName());
+                    if (null != locationData) {
+                        Log.i(TAG, "修改前:" + methodHookParam.args[0]);
+                        Object param = methodHookParam.args[0];
+                        JSONObject dataMap = locationData.getJSONObject("data");
+                        for (String key : dataMap.keySet()) {
+                            try {
+                                CData cData = dataMap.getObject(key, CData.class);
+                                ReflectUtils.setValue(param, key, cData);
+                            } catch (Throwable e) {
+                                Log.e(TAG, "处理异常 " + key + "  " + dataMap.getString(key));
+                            }
+                        }
+                        Log.i(TAG, "修改后:" + methodHookParam.args[0]);
+                    }
+                }
+            };
+
             //hook所有调用高德定位的LocationListener
             hook_method("com.amap.api.location.AMapLocationClient", lpp.classLoader, "setLocationListener", "com.amap.api.location.AMapLocationListener", new XC_MethodHook() {
                 final Set<Class> hookListener = new HashSet<>();
+
                 @Override
                 protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     Object listener = methodHookParam.args[0];
